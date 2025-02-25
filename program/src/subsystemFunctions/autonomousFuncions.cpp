@@ -8,18 +8,23 @@
 #include "subsystemHeaders/autonomousHeaders.hpp"
 #include "subsystemHeaders/conveyorMechanism.hpp"
 
-ASSET(path2_txt);
+ASSET(testing1_txt);
 
 void autonomusProgram(){
     // set position to x:0, y:0, heading:0
-    chassis.setPose(0, 0, 0);
-    pros::lcd::set_text(1, "done");
+    //chassis.setPose(0, 0, -1.25);
+    //pros::lcd::set_text(1, "done");
     // turn to face heading 90 with a very long timeout
-   // chassis.moveToPoint(0, 48, 10000);
-    //chassis.turnToHeading(90, 100000);
+    //chassis.moveToPose(0, 48, 0, 1000000000);
+    //chassis.moveToPoint(0, 30, 100000);
+    //chassis.turnToHeading(90, 2000);
+    //chassis.moveToPoint(24, 48, 10000);
+    //chassis.moveToPoint(0, 48, 10000);
+    //chassis.moveToPoint(0, 0, 10000);
+    chassis.turnToHeading(90, 100000);
     //translate(48, 80);
-    turn(1200, -40);
-    chassis.follow(path2_txt, 15, 2000);
+    //turn(1200, -40);
+    //chassis.follow(testing1_txt, 15, 2000);
 }
 
 void skills(){

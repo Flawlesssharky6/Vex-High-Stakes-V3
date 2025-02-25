@@ -26,13 +26,13 @@ void on_center_button() {}
 void initialize() {
   pros::lcd::initialize(); // initialize brain screen
   pros::lcd::set_text(1, "32092D");
-  chassis.calibrate(); // calibrate sensors
+  
   lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   lady_brown_encoder.reset_position();
-  imu.reset();
-  pros::delay(2000);
+  chassis.calibrate(); // calibrate sensors
+  //pros::delay(2000);
       // thread to for brain screen and position logging
       pros::Task screenTask([&]() {
         while (true) {
@@ -82,9 +82,9 @@ void competition_initialize() {
 void autonomous() {
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  blueLeftCorner();
+  //blueLeftCorner();
   //skills();
-  //autonomusProgram();
+  autonomusProgram();
 }
 
 /**
@@ -101,7 +101,6 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  chassis.setPose(0, 0, 0);
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   bool doinkerPiston = false;
@@ -116,15 +115,17 @@ void opcontrol() {
             ", Theta: " + std::to_string(pose.theta);
     pros::lcd::set_text(0, positionText);
     */
-
+    pros::lcd::set_text(6, std::to_string(optical_sensor.get_proximity()));
+    pros::lcd::set_text(7, std::to_string(optical_sensor.get_hue()));
     set_drive();
-    set_conveyor_motor();
+    conveyor_color_sort("blue");
+    //set_conveyor_motor();
     clampPosition = set_clamp(clampPosition);
     clampPosition = open_clamp(clampPosition);
     pros::lcd::set_text(4, "done");
     if(pros::millis()-timeFlag>=1000)
     {
-     controller.print(1, 0, "clamp: %s", clampPosition ? "closed" : "open");
+     controller.print(1, 0, "clamp: %s", clampPosition ? "Open" : "Closed");
      timeFlag=pros::millis();
     }
     pros::Task::delay_until(&timeFlag, 10);

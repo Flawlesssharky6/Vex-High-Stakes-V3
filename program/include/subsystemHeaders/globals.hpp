@@ -3,6 +3,7 @@
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/motors.hpp"
+#include "pros/optical.hpp"
 
 //declare motors
 extern pros::Motor intake;
@@ -52,3 +53,5 @@ extern lemlib::ControllerSettings angular_controller;
 //create chassis
 extern lemlib::Chassis chassis;
 
+//Optical sensor
+extern pros::Optical optical_sensor;
