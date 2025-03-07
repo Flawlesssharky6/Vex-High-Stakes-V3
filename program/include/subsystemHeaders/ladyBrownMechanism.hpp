@@ -11,3 +11,7 @@ void setLadyBrownMotor();
 void prepareLadyBrownTask(void* param);
 
 void prepareLadyBrown();
+
+void moveLadyBrownAsync();
+
+void secondary_lady_brown();

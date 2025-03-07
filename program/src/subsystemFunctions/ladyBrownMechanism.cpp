@@ -26,55 +26,48 @@ void setLadyBrownMotor(){
 }
 // Macro functions
 void prepareLadyBrown(){
-    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
-        if(lady_brown_encoder.get_position() < 1250){
-            setLadyBrownMechanism(127);
-            while (lady_brown_encoder.get_position() < 200 && !controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) || partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+        pros::lcd::set_text(4, "RIGHT button pressed");
+        // Move the Lady Brown mechanism to a certain position
+        int targetPosition = 40000; // Set your target position here
+        pros::lcd::set_text(9, "Target position: " + std::to_string(targetPosition));
+        if(lady_brown_encoder.get_position() < targetPosition){
+            setLadyBrownMechanism(127); // Move up
+            while (lady_brown_encoder.get_position() < targetPosition){
+                pros::lcd::set_text(10, "Moving Lady Brown up: " + std::to_string(lady_brown_encoder.get_position()));
+                pros::delay(20);
+            }
+        } else if(lady_brown_encoder.get_position() > targetPosition){
+            setLadyBrownMechanism(-127); // Move down
+            while (lady_brown_encoder.get_position() > targetPosition){
+                pros::lcd::set_text(10, "Moving Lady Brown down: " + std::to_string(lady_brown_encoder.get_position()));
                 pros::delay(20);
             }
         }
-        setLadyBrownMechanism(0);
+        setLadyBrownMechanism(0); // Stop movement
+        pros::lcd::set_text(10, "Lady Brown stopped at target position");
     } 
 }
-/*
-void moveToPositionAsync(void* param) {
-    // Extract the target position from the parameter
-    int targetPosition = *static_cast<int*>(param);
 
-    // Get the current position of the encoder
-    int currentPosition = lady_brown_encoder.get_position();
-
-    // Determine direction: positive or negative
-    int direction = (targetPosition > currentPosition) ? 1 : -1;
-
-    // Set the motor to move towards the target position
-    setLadyBrownMechanism(127 * direction);
-
-    // Keep moving until the target position is reached
-    while ((direction == 1 && lady_brown_encoder.get_position() < targetPosition) ||
-           (direction == -1 && lady_brown_encoder.get_position() > targetPosition)) {
-        pros::delay(20); // Delay to avoid hogging the CPU
-    }
-
-    // Stop the motor once the position is reached
-    setLadyBrownMechanism(0);
+void moveLadyBrownAsync() {
+    lady_brown.move(-127);
+    pros::delay(2000); // Adjust timing as needed
+    lady_brown.move(0); // Stop movement
 }
 
-void prepareLadyBrown() {
-    // Static variables to keep track of the task and target position
-    static pros::Task* prepareTask = nullptr;
-    static int targetPosition = 1800; // Desired position for lady brown
-
-    // Check if the button was just pressed
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-        // If there's an existing task, remove and delete it
-        if (prepareTask != nullptr) {
-            prepareTask->remove();
-            delete prepareTask;
+void secondary_lady_brown(){
+    while(true){
+        // Check if the main controller is controlling the mechanism
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B) || controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
+            // Main controller has priority
+            int motorPower = 127 * (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)
+                                    - controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN));
+            setLadyBrownMechanism(motorPower);
+        } else {
+            // Secondary controller can control the mechanism
+            int secondaryPower = partner_controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+            setLadyBrownMechanism(secondaryPower);
         }
-
-        // Create a new task to move to the desired position
-        prepareTask = new pros::Task(moveToPositionAsync, &targetPosition, "PrepareLadyBrownTask");
+        pros::delay(20); // Add a small delay to prevent hogging the CPU
     }
-}  
-*/
+}

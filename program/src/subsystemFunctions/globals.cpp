@@ -35,8 +35,8 @@ pros::Rotation horizontal_encoder(-18);
 pros::Rotation vertical_encoder(17);
 
 //tracking wheels
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -3);
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, .92);
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -3.5);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 1);
 
 // odometry settings
 lemlib::OdomSensors odom_sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
@@ -49,9 +49,12 @@ lemlib::OdomSensors odom_sensors(&vertical_tracking_wheel, // vertical tracking 
 //pneumatics
 pros::ADIDigitalOut clamp('G');
 pros::ADIDigitalOut doinker('H');
+pros::ADIDigitalOut intake_piston('F');
 
 //controller
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
+pros::Controller partner_controller(pros::E_CONTROLLER_PARTNER);
+
 //input curve for throttle (forward/backward) input during driver control
 extern lemlib::ExpoDriveCurve throttle_curve(3, //set joystick dead zone to avoid drift
                                             10, //minimum output 

@@ -7,24 +7,94 @@
 #include "subsystemHeaders/globals.hpp"
 #include "subsystemHeaders/autonomousHeaders.hpp"
 #include "subsystemHeaders/conveyorMechanism.hpp"
+#include "subsystemHeaders/ladyBrownMechanism.hpp"
+#include <chrono>
 
-ASSET(testing1_txt);
+
 
 void autonomusProgram(){
-    // set position to x:0, y:0, heading:0
-    //chassis.setPose(0, 0, -1.25);
-    //pros::lcd::set_text(1, "done");
-    // turn to face heading 90 with a very long timeout
-    //chassis.moveToPose(0, 48, 0, 1000000000);
-    //chassis.moveToPoint(0, 30, 100000);
-    //chassis.turnToHeading(90, 2000);
-    //chassis.moveToPoint(24, 48, 10000);
-    //chassis.moveToPoint(0, 48, 10000);
-    //chassis.moveToPoint(0, 0, 10000);
-    chassis.turnToHeading(90, 100000);
-    //translate(48, 80);
-    //turn(1200, -40);
-    //chassis.follow(testing1_txt, 15, 2000);
+    //get alliance stake
+    chassis.setPose(12, -13, -40);
+    conveyor.move(127);
+    intake.move(127);
+    setLadyBrownMechanism(127);
+    pros::delay(1000);
+    setLadyBrownMechanism(0);
+    //get 1st stake
+    move(-50, 500);
+    pros::Task ladyBrownTask(moveLadyBrownAsync);
+    clamp.set_value(true);
+    pros::delay(100);
+    chassis.turnToHeading(90, 500);
+    chassis.moveToPoint(48, -24, 1000);
+    chassis.turnToHeading(170, 500);
+    chassis.moveToPoint(48, -48, 500);
+    chassis.turnToPoint(72, -60, 500);
+    chassis.moveToPoint(72, -60, 1000);
+    chassis.moveToPoint(48, -48, 500, {.forwards = false}, false);
+    chassis.turnToHeading(270, 500);
+    chassis.moveToPoint(24,-48,500);
+    pros::delay(500);
+    chassis.moveToPoint(8,-48, 500, {.maxSpeed = 50}, false);
+    pros::delay(500);
+    chassis.moveToPoint(36, -36, 1000, {.forwards = false}, false);
+    chassis.moveToPoint(24, -60, 1000);
+    chassis.moveToPoint(36,-36, 1000);
+    chassis.turnToHeading(45, 500);
+    chassis.moveToPoint(16, -56, 1500, {.forwards = false, .maxSpeed = 80}, false);
+    conveyor.move(0);
+    intake.move(0);
+    clamp.set_value(false);
+    //move to 2nd stake
+    pros::delay(50);
+    intake.move(127);
+    conveyor.move(127);
+    chassis.moveToPoint(24, -24, 1000, {.maxSpeed = 65}, false);
+    chassis.turnToHeading(180, 1000);
+    chassis.moveToPoint(24,0,2000, {.forwards = false, .maxSpeed=65}, false);
+    chassis.turnToHeading(180,1000);
+    pros::delay(500);
+    chassis.moveToPoint(24, 22, 4000, {.forwards = false, .maxSpeed = 30}, false);
+    //clamp second stake
+    clamp.set_value(true);
+    pros::delay(500);
+    chassis.turnToHeading(90, 500);
+    chassis.moveToPoint(48, 24, 1000);
+    chassis.turnToPoint(48, 48, 1000);
+    chassis.moveToPoint(48, 48, 1000);
+    
+    chassis.turnToPoint(72, 62, 1000);
+    chassis.moveToPoint(72, 62, 1000);
+    
+    chassis.moveToPoint(48, 48, 500, {.forwards = false}, false);
+    chassis.turnToHeading(270, 500);
+    chassis.moveToPoint(24,48,500);
+    
+    pros::delay(500);
+    chassis.moveToPoint(12,48, 500, {.maxSpeed = 50}, false);
+    chassis.moveToPoint(36, 36, 1000, {.forwards = false}, false);
+    chassis.moveToPoint(24, 60, 1000);
+    chassis.moveToPoint(36,36, 1000);
+    chassis.turnToHeading(135, 500);
+    chassis.moveToPoint(8, 64, 1500, {.forwards = false, .maxSpeed = 80}, false);
+    clamp.set_value(false);
+    
+    //get 3rd stake
+    chassis.moveToPoint(36, 36, 1000);
+    chassis.turnToHeading(90, 500);
+    chassis.moveToPoint(72, 48, 3000);
+    conveyor.move(0);
+    intake.move(0);
+    chassis.turnToPoint(96 , 24, 500);
+    chassis.moveToPoint(96, 24, 5000);
+    intake.move(127);
+    conveyor.move(127);
+    pros::delay(500);
+    intake.move(0);
+    conveyor.move(0);
+    chassis.turnToPoint(72, 48, 1000);
+    chassis.moveToPoint(120, 0, 3000, {.forwards = false}, false);
+    clamp.set_value(true);
 }
 
 void skills(){
@@ -199,6 +269,8 @@ void skills(){
 
 }
 
+
+
 //autonomous skills
 /*
 void skills(){
@@ -256,56 +328,25 @@ void redRightCorner(){
     move(30,600);
 }
 void redLeftCorner(){
-
-    //place ring on alliance stake
-    move(50, 570);
-    pros::delay(200);
-    turn(550, -50);
+    chassis.setPose(12, 14, 215);
+    pros::Task conveyorTask([]{ auton_conveyor("red"); });
+    setLadyBrownMechanism(127);
+    pros::delay(1000);
+    setLadyBrownMechanism(0);
+    pros::Task ladyBrownTask(moveLadyBrownAsync);
+    //get 1st stake
+    chassis.moveToPoint(48, 24, 2000, {.forwards = false, .maxSpeed =80}, false);
     clamp.set_value(true);
-    pros::delay(50);
-    move(-50, 280);
-    pros::delay(100);
-    conveyor.move(127);
-    intake.move(127);
-    pros::delay(1500);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(0);
-    intake.move(0);
-    clamp.set_value(false);
-
-    //drive to next stake and grab first ring
-    move(50,200);
-    pros::delay(100);
-    turn(780, 50);
-    move(-50,800);
-    turn(59,50);
-    move(-50,500);
-    clamp.set_value(true);
-    pros::delay(150);
-    turn(760,50);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 800);
-    pros::delay(100);
-
-    //turn towards center pile and drive to ladder
-    turn(510, 50);
-    pros::delay(500);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 750);
-    pros::delay(150);
-    move(-50,600);
-    turn(450,50);
-    move(50,600);
-    move(50,550);
-    conveyor.move(0);
-    intake.move(0);
+    chassis.turnToHeading(60, 500);
+    chassis.moveToPoint(65, 48, 2000, {.maxSpeed = 50,  .minSpeed =30, .earlyExitRange = 5}, false);
+    chassis.moveToPoint(60, 65, 2000, {.maxSpeed = 50}, false);
+    chassis.turnToHeading(235, 500);
+    chassis.moveToPoint(36, 24, 2000, {.maxSpeed = 90, .minSpeed =50,  .earlyExitRange =5}, false);
+    intake_piston.set_value(true);
+    chassis.moveToPoint(24, 0, 1000);
+    chassis.turnToHeading(0, 500);
+    intake_piston.set_value(false);
+    chassis.moveToPoint(0, 60, 4000);
 
 }
 void blueLeftCorner(){

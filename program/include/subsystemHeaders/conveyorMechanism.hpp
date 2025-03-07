@@ -9,3 +9,7 @@ void set_conveyor_mechansim(int power);
 void set_conveyor_motor();
 
 void conveyor_color_sort(std::string color);
+
+bool set_intake(bool intakePosition);
+
+void auton_conveyor(std::string color);

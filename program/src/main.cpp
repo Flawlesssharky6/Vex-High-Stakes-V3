@@ -46,6 +46,7 @@ void initialize() {
             pros::delay(50);
         }
     });
+    optical_sensor.set_led_pwm(100);
 }
 
 /**
@@ -84,6 +85,7 @@ void autonomous() {
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   //blueLeftCorner();
   //skills();
+  //redLeftCorner();
   autonomusProgram();
 }
 
@@ -101,37 +103,35 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+  right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+  optical_sensor.set_led_pwm(100);
   bool doinkerPiston = false;
   bool clampPosition = true;
-  auto timeFlag=pros::millis();
+  bool intakePosition = true;
+  auto timeFlag = pros::millis();
+
+  // Start the secondary controller task
+  pros::Task secondaryLadyBrownTask(secondary_lady_brown);
+
   while (true) {
-    /*
-        lemlib::Pose pose = chassis.getPose();
-    std::string positionText = 
-            "X: " + std::to_string(pose.x) + 
-            ", Y: " + std::to_string(pose.y) + 
-            ", Theta: " + std::to_string(pose.theta);
-    pros::lcd::set_text(0, positionText);
-    */
     pros::lcd::set_text(6, std::to_string(optical_sensor.get_proximity()));
     pros::lcd::set_text(7, std::to_string(optical_sensor.get_hue()));
     set_drive();
-    conveyor_color_sort("blue");
+    conveyor_color_sort("red");
     //set_conveyor_motor();
     clampPosition = set_clamp(clampPosition);
     clampPosition = open_clamp(clampPosition);
-    pros::lcd::set_text(4, "done");
-    if(pros::millis()-timeFlag>=1000)
-    {
-     controller.print(1, 0, "clamp: %s", clampPosition ? "Open" : "Closed");
-     timeFlag=pros::millis();
+    intakePosition = set_intake(intakePosition);
+    //pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));
+    if (pros::millis() - timeFlag >= 1000) {
+      controller.print(1, 0, "clamp: %s", clampPosition ? "Open" : "Closed");
+      timeFlag = pros::millis();
     }
     pros::Task::delay_until(&timeFlag, 10);
     setLadyBrownMotor();
-    prepareLadyBrown(); // Check and start the prepareLadyBrownTask if the button is pressed
+    prepareLadyBrown(); // Ensure this function is called in the loop
     doinkerPiston = setDoinker(doinkerPiston);
     pros::delay(20); // Add a small delay to prevent overwhelming the CPU
-  } 
+  }
 }

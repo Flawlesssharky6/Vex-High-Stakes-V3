@@ -8,10 +8,10 @@ void set_conveyor_mechanism(int power){
 }
 
 void conveyor_color_sort(std::string color){
-    int red_threshold = 40;
-    int blue_threshold = 150;
+    int red_threshold = 50;
+    int blue_threshold = 140;
     int proximity_threshold = 240;
-
+    
     int motorPower = 127 * (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)
     - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2));
 
@@ -19,21 +19,49 @@ void conveyor_color_sort(std::string color){
         if(optical_sensor.get_hue() < red_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){
             pros::delay(50);
             set_conveyor_mechanism(0);
-            pros::delay(800);
+            pros::delay(50);
         }else{
             set_conveyor_mechanism(motorPower);
-            pros::delay(50);
+            pros::delay(10);
         }
     }else if(color == "red"){
         if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){    
             pros::delay(50);
             set_conveyor_mechanism(0);
-            pros::delay(800);
+            pros::delay(50);
         }else{
             set_conveyor_mechanism(motorPower);
-            pros::delay(50);
+            pros::delay(10);
         }
 }
+}
+
+void auton_conveyor(std::string color){
+    int red_threshold = 50;
+    int blue_threshold = 140;
+    int proximity_threshold = 240;
+    int motorPower = 127;
+    while (true){
+    if(color == "blue"){
+        if(optical_sensor.get_hue() < red_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){
+            pros::delay(50);
+            set_conveyor_mechanism(0);
+            pros::delay(50);
+        }else{
+            set_conveyor_mechanism(motorPower);
+            pros::delay(10);
+        }
+    }else if(color == "red"){
+        if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){    
+            pros::delay(50);
+            set_conveyor_mechanism(0);
+            pros::delay(50);
+        }else{
+            set_conveyor_mechanism(motorPower);
+            pros::delay(10);
+        }
+}
+    }
 }
 
 //driver control functions
@@ -47,3 +75,16 @@ void set_conveyor_motor(){
     set_conveyor_mechanism(motorPower);
 }
 
+bool set_intake(bool intakePosition){
+    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+        if (intakePosition == true){
+            intake_piston.set_value(true);  // Activate solenoid
+            intakePosition = false;
+        }else{
+            intake_piston.set_value(false);  // Activate solenoid
+            intakePosition = true;
+        }
+    }
+    pros::delay(20);
+    return(intakePosition);
+}

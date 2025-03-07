@@ -36,9 +36,12 @@ extern lemlib::OdomSensors odom_sensors;
 //pneumatics
 extern pros::ADIDigitalOut clamp;
 extern pros::ADIDigitalOut doinker;
+extern pros::ADIDigitalOut intake_piston;
 
 //controller
 extern pros::Controller controller;
+extern pros::Controller partner_controller;
+
 //input curve for throttle (forward/backward) input during driver control
 extern lemlib::ExpoDriveCurve throttle_curve; 
 //inout curve for steer (turning) input during driver control
