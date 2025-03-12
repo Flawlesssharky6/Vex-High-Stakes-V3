@@ -14,4 +14,6 @@ void prepareLadyBrown();
 
 void moveLadyBrownAsync();
 
+void moveLadyBrownAsync2();
+
 void secondary_lady_brown();

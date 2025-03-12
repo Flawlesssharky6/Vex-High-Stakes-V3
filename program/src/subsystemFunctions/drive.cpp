@@ -36,7 +36,7 @@ void set_drive(){
        chassis.arcade(leftY, rightX);
 
         // delay to save resources
-        pros::delay(25);
+        pros::delay(20);
 }
 
 //autonomous functions

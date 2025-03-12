@@ -26,7 +26,6 @@ void on_center_button() {}
 void initialize() {
   pros::lcd::initialize(); // initialize brain screen
   pros::lcd::set_text(1, "32092D");
-  
   lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -110,28 +109,26 @@ void opcontrol() {
   bool clampPosition = true;
   bool intakePosition = true;
   auto timeFlag = pros::millis();
-
-  // Start the secondary controller task
-  pros::Task secondaryLadyBrownTask(secondary_lady_brown);
+  std::string teamColor = "red";
 
   while (true) {
-    pros::lcd::set_text(6, std::to_string(optical_sensor.get_proximity()));
-    pros::lcd::set_text(7, std::to_string(optical_sensor.get_hue()));
+    pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));
     set_drive();
-    conveyor_color_sort("red");
+    conveyor_color_sort(teamColor);
     //set_conveyor_motor();
     clampPosition = set_clamp(clampPosition);
-    clampPosition = open_clamp(clampPosition);
-    intakePosition = set_intake(intakePosition);
-    //pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));
+    //clampPosition = open_clamp(clampPosition);
+    //intakePosition = set_intake(intakePosition);
     if (pros::millis() - timeFlag >= 1000) {
       controller.print(1, 0, "clamp: %s", clampPosition ? "Open" : "Closed");
       timeFlag = pros::millis();
     }
     pros::Task::delay_until(&timeFlag, 10);
     setLadyBrownMotor();
-    prepareLadyBrown(); // Ensure this function is called in the loop
+
+    prepareLadyBrown();
     doinkerPiston = setDoinker(doinkerPiston);
+    //teamColor = change_color(teamColor);
     pros::delay(20); // Add a small delay to prevent overwhelming the CPU
   }
 }
