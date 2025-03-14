@@ -46,18 +46,28 @@ void auton_conveyor(std::string teamColor){
     while (true){
         if(color == "blue"){
             if(optical_sensor.get_hue() < red_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){
-                pros::delay(50);
-                set_conveyor_mechanism(0);
-                pros::delay(50);
+                
+                set_conveyor_mechanism(-127);
+                pros::delay(500);
+                /*
+                if(optical_sensor.get_hue() > red_threshold && optical_sensor.get_proximity() > proximity_threshold){
+                    set_conveyor_mechanism(127);
+                }
+                    */
             }else{
                 set_conveyor_mechanism(motorPower);
                 pros::delay(10);
             }
         }else if(color == "red"){
             if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){    
-                pros::delay(50);
-                set_conveyor_mechanism(0);
-                pros::delay(50);
+                
+                set_conveyor_mechanism(-127);
+                pros::delay(500);
+                /*
+                if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold){
+                    set_conveyor_mechanism(127);
+                }
+                */
             }else{
                 set_conveyor_mechanism(motorPower);
                 pros::delay(10);
@@ -100,3 +110,4 @@ std::string change_color(std::string teamColor){
     }
     pros::delay(20);
 }
+

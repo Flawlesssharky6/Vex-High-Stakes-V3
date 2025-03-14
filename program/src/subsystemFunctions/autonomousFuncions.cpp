@@ -4,6 +4,7 @@
 #include "main.h"
 #include "pros/rtos.h"
 #include "pros/rtos.hpp"
+#include "subsystemHeaders/doinker.hpp"
 #include "subsystemHeaders/drive.hpp"
 #include "subsystemHeaders/globals.hpp"
 #include "subsystemHeaders/autonomousHeaders.hpp"
@@ -15,11 +16,10 @@
 
 
 void autonomusProgram(){
-    
     //get alliance stake
     chassis.setPose(12, -13, -40);
     setLadyBrownMechanism(127);
-    pros::delay(500);
+    pros::delay(900);
     setLadyBrownMechanism(0);
     //get 1st stake
     move(-50, 500);
@@ -52,8 +52,8 @@ void autonomusProgram(){
     chassis.moveToPoint(24, -63, 1000);
     chassis.moveToPoint(30,-42, 1500, {.forwards = false}, false);
     chassis.turnToHeading(45, 600);
-    conveyor.move(-127);
-    intake.move(-127);
+    conveyor.move(-50);
+    intake.move(-50);
     chassis.moveToPoint(12, -58, 2000, {.forwards = false, .maxSpeed = 80}, false);
     conveyor.move(0);
     intake.move(0);
@@ -61,21 +61,19 @@ void autonomusProgram(){
     clamp.set_value(false);
     
     //move to 2nd stake
-    chassis.moveToPoint(24, -24, 1000, {.maxSpeed = 65}, false);
-    chassis.setPose(chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
-    chassis.turnToHeading(180, 3000);
-    chassis.moveToPoint(24,0,2000, {.forwards = false}, false);
-    chassis.turnToPoint(24,20,1000, {.forwards = false}, false);
-    chassis.moveToPoint(24, 20, 1000, {.forwards = false}, false);
+    chassis.moveToPoint(24, -24, 1000);
+    chassis.turnToHeading(180, 1000);
+    chassis.moveToPose(24, 24, 180, 2800, {.forwards = false}, false);
     //clamp second stake
-    clamp.set_value(true);
     conveyor.move(-127);
     intake.move(-127);
-    pros::delay(250);
+    clamp.set_value(true);
+    
+    
     chassis.turnToHeading(90, 500);
+    chassis.moveToPoint(48, 24, 1000);
     conveyor.move(127);
     intake.move(127);
-    chassis.moveToPoint(48, 24, 1000);
     chassis.turnToPoint(48, 48, 1000);
     chassis.moveToPoint(48, 48, 1000);
     
@@ -92,39 +90,45 @@ void autonomusProgram(){
     chassis.moveToPoint(24, 60, 1000);
     chassis.moveToPoint(24,48, 1000);
     chassis.turnToHeading(135, 500);
+    conveyor.move(-50);
+    intake.move(-50);
     chassis.moveToPoint(8, 64, 1500, {.forwards = false}, false);
-    conveyor.move(0);
-    intake.move(0);
     clamp.set_value(false);
     
     chassis.setPose(13, 59, chassis.getPose().theta);
     //get 3rd stake
     
     chassis.moveToPoint(36, 48, 1500);
+    conveyor.move(0);
+    intake.move(0);
     chassis.turnToHeading(90, 1000);
+    pros::delay(50);
     chassis.moveToPoint(72, 48, 1500);
-    chassis.setPose(72 , 48, chassis.getPose().theta);
+    
     intake.move(127);
     conveyor.move(127);
-    chassis.turnToPoint(84 , 36, 500);
-    chassis.moveToPoint(84, 36, 1500);
-    chassis.moveToPoint(96, 24, 1000);
-    pros::delay(400);
+    chassis.turnToPoint( 108, 36, 500);
+    
+    chassis.moveToPoint(108, 36, 1000);
+    
+    //chassis.moveToPoint(112, 12, 1000);
     intake.move(0);
     conveyor.move(0);
-    chassis.turnToPoint(112, 12, 500, {.forwards = false}, false);
-    chassis.moveToPoint(112,12, 1000, {.forwards = false, .maxSpeed=80}, false);
-    chassis.moveToPoint(120, 0, 1000, {.forwards = false, .maxSpeed=80}, false);
+    //chassis.turnToPoint(112, 12, 500, {.forwards = false}, false);
+    //chassis.moveToPoint(112,12, 1000, {.forwards = false, .maxSpeed=80}, false);
+    chassis.turnToPoint(120,0, 500, {.forwards = false}, false);
+    chassis.moveToPoint(120, 0, 3500, {.forwards = false, .maxSpeed=85}, false);
     clamp.set_value(true);
     pros::delay(100);
-    pros::Task conveyorTask([]{ auton_conveyor("red"); });
+    intake.move(-127);
+    conveyor.move(-127);
     chassis.turnToPoint(96, -24, 500);
+    pros::Task conveyorTask([]{ auton_conveyor("red"); });
     chassis.moveToPoint(96, -24, 1000);
     chassis.turnToPoint(96, -48, 500);
     chassis.moveToPoint(96, -48, 1000);
     chassis.turnToPoint(120, -48, 500);
-    chassis.moveToPoint(120, -48, 1000);
-    chassis.moveToPoint(135, -48, 1000);
+    chassis.moveToPoint(135, -48, 1500);
     chassis.moveToPoint(96, -48, 1000, {.forwards = false}, false); 
     chassis.turnToPoint(120, -60, 500);
     chassis.moveToPoint(120, -60, 1000);
@@ -135,24 +139,30 @@ void autonomusProgram(){
     conveyorTask.remove();
     clamp.set_value(false);
     chassis.moveToPoint(92,-44, 500);
-    pros::delay(200);
+    pros::delay(500);
     clamp.set_value(true);
     chassis.moveToPoint(150, -78, 1500, {.forwards = false,}, false);  
-    chassis.moveToPoint(96, -48, 2000);
+    chassis.moveToPoint(96, -48, 1000);
     intake.move(0);
     conveyor.move(0);
     //plow 4th stake
     intake_piston.set_value(true);
     chassis.turnToPoint(130, 24, 500);
-    chassis.moveToPoint(130, 24, 2000);
+    chassis.moveToPoint(130, 24, 1500, {.minSpeed=80, .earlyExitRange = 10}, false);
     chassis.turnToPoint(144, 72, 500);
     chassis.moveToPoint(144, 72, 2000);
-    chassis.moveToPoint(124,48 , 1000, {.forwards = false}, true);
+    chassis.moveToPoint(124,48 , 1000, {.forwards = false, .earlyExitRange = 3}, false);
     //hang
     pros::Task ladyBrownUp([]{ moveLadyBrownAsync2(); });
-    chassis.turnToHeading(45, 1000);
-    ladyBrownUp.remove();
-    chassis.moveToPoint(80, 0, 5000, {.forwards = false, .maxSpeed=45}, false);
+    chassis.turnToHeading(50, 1000);
+    //ladyBrownUp.remove();
+    chassis.moveToPoint(80, 0, 7500, {.forwards = false, .maxSpeed = 64}, false);
+    left_motor_group.move(30);
+    right_motor_group.move(30);
+    pros::delay(500);
+    left_motor_group.move(0);
+    right_motor_group.move(0);
+    chassis.moveToPoint(124, 48, 500, {.forwards = false, .maxSpeed = 30}, false);
     
 }
 
@@ -380,27 +390,58 @@ void skills(){
 
 //Head to Head autonomous
 void redRightCorner(){
-    chassis.setPose(22,-61, 20);
+    chassis.setPose(22,-61, 65);
+    doinker.set_value(true);
+    intake.move(127);
+    conveyor.move(127);
+    chassis.moveToPoint(53, -48, 1000);
+    pros::delay(800);
+    intake.move(0);
+    conveyor.move(0);
+    doinker.set_value(false);
+    chassis.moveToPoint(45, -54, 1000, {.forwards = false}, false);
+    doinker.set_value(true);
+    pros::delay(100);
+    chassis.moveToPose(48, -24, 180, 3000, {.forwards = false}, false);
+    clamp.set_value(true);
+    doinker.set_value(false);
+    pros::delay(550);
+    intake.move(127);
+    conveyor.move(127);
+    pros::delay(600);
+    intake.move(0);
+    conveyor.move(0);
+    clamp.set_value(false);
+    chassis.moveToPoint(48, -36, 1000, {.forwards = false}, false);
+    chassis.turnToHeading(300,500);
+    chassis.moveToPose(58, -56, 0, 3000, {.forwards = false}, false);
+    clamp.set_value(true);
+    chassis.turnToHeading(270, 500);
     pros::Task conveyorTask([]{ auton_conveyor("red"); });
-    chassis.moveToPoint(48,-54, 2000, {.minSpeed = 100, .earlyExitRange = 5});
+    chassis.moveToPoint(4, -68, 2000);
+    chassis.moveToPoint(20, -60, 1000, {.forwards = false}, false);
+    chassis.turnToHeading(40, 500);
+    clamp.set_value(false);
+    chassis.moveToPoint(52, -8, 1000);
 }
 void redLeftCorner(){
     chassis.setPose(12, 14, 215);
+    conveyor.move(-127);
+    intake.move(-127);
     setLadyBrownMechanism(127);
     pros::delay(1000);
     setLadyBrownMechanism(0);
     pros::Task ladyBrownTask(moveLadyBrownAsync);
     //get 1st stake
-    chassis.moveToPoint(48, 24, 2000, {.forwards = false, .maxSpeed =80}, false);
+    chassis.moveToPoint(22, 20, 500, {.forwards = false}, false);
+    chassis.moveToPose(48,24,300,2500, {.forwards = false}, false);
     clamp.set_value(true);
     chassis.turnToHeading(60, 500);
     pros::Task conveyorTask([]{ auton_conveyor("red"); });
     chassis.moveToPoint(64, 47, 2000, {.maxSpeed = 50,  .minSpeed =30, .earlyExitRange = 5}, false);
     chassis.moveToPoint(60, 66, 1500, {.maxSpeed = 50}, false);
     chassis.turnToHeading(235, 500);
-    chassis.moveToPoint(48, 48, 1000);
-    chassis.turnToHeading(270, 500);
-    chassis.moveToPoint(30, 12, 2000, {.maxSpeed = 90, .minSpeed =50,  .earlyExitRange =5}, false);
+    chassis.moveToPoint(30, 12, 2000, {.minSpeed =50,  .earlyExitRange =8}, false);
     intake_piston.set_value(true);
     chassis.moveToPoint(24, 0, 1000, {.maxSpeed=90}, false);
     pros::delay(500);
@@ -408,68 +449,76 @@ void redLeftCorner(){
     intake_piston.set_value(false);
     chassis.moveToPoint(-8, 80, 2500);
     conveyorTask.remove();
-    chassis.moveToPoint(55, 17, 2000, {.forwards = false}, false);
+    conveyor.move(0);
+    intake.move(0);
+    chassis.moveToPoint(55, 5, 2000, {.forwards = false}, false);
 
 }
 void blueLeftCorner(){
-    move(-30, 3000);
-    clamp.set_value(true);
-    pros::delay(2000);
-    turn(850,50);
-    conveyor.move(127);
+    
+    chassis.setPose(22,32, 65);
+    doinker.set_value(true);
     intake.move(127);
-    move(30,600);
+    conveyor.move(127);
+    chassis.moveToPoint(53, 46, 1000);
+    pros::delay(800);
+    intake.move(0);
+    conveyor.move(0);
+    doinker.set_value(false);
+    chassis.moveToPoint(45, 39, 1000, {.forwards = false}, false);
+    doinker.set_value(true);
+    pros::delay(100);
+
+    chassis.moveToPose(48, 24, 0, 3000, {.forwards = false}, false);
+    clamp.set_value(true);
+    doinker.set_value(false);
+    pros::delay(550);
+    intake.move(127);
+    conveyor.move(127);
+    pros::delay(600);
+    intake.move(0);
+    conveyor.move(0);
+    clamp.set_value(false);
+    chassis.moveToPoint(48, 36, 1000, {.forwards = false}, false);
+    chassis.turnToHeading(240,500);
+    chassis.moveToPose(58, 56, 180, 3000, {.forwards = false}, false);
+    clamp.set_value(true);
+    chassis.turnToHeading(270, 500);
+    pros::Task conveyorTask([]{ auton_conveyor("blue"); });
+    chassis.moveToPoint(4, 68, 2000);
+    chassis.moveToPoint(20, 60, 1000, {.forwards = false}, false);
+    chassis.turnToHeading(40, 500);
+    clamp.set_value(false);
+    chassis.moveToPoint(52, 8, 3000);
 }
 void blueRightCorner(){
-    //place ring on alliance stake
-    move(50, 570);
-    pros::delay(200);
-    turn(550, 50);
-    clamp.set_value(true);
-    pros::delay(50);
-    move(-50, 280);
-    pros::delay(100);
-    conveyor.move(127);
-    intake.move(127);
-    pros::delay(1500);
+    chassis.setPose(12, -14, 325);
     conveyor.move(-127);
     intake.move(-127);
-    pros::delay(200);
-    conveyor.move(0);
-    intake.move(0);
-    clamp.set_value(false);
-
-    //drive to next stake and grab first ring
-    move(50,200);
-    pros::delay(100);
-    turn(780, -50);
-    move(-50,800);
-    turn(59,-50);
-    move(-50,500);
+    setLadyBrownMechanism(127);
+    pros::delay(1000);
+    setLadyBrownMechanism(0);
+    pros::Task ladyBrownTask(moveLadyBrownAsync);
+    //get 1st stake
+    chassis.moveToPoint(22, -20, 500, {.forwards = false}, false);
+    chassis.moveToPose(48,-24,240,2500, {.forwards = false}, false);
     clamp.set_value(true);
-    pros::delay(150);
-    turn(760,-50);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 800);
-    pros::delay(100);
-
-    //turn towards center pile and drive to ladder
-    turn(510, -50);
+    chassis.turnToHeading(120, 500);
+    pros::Task conveyorTask([]{ auton_conveyor("blue"); });
+    chassis.moveToPoint(64, -47, 2000, {.maxSpeed = 50,  .minSpeed =30, .earlyExitRange = 5}, false);
+    chassis.moveToPoint(60, -66, 1500, {.maxSpeed = 50}, false);
+    chassis.turnToHeading(305, 500);
+    chassis.moveToPoint(30, -12, 2000, {.minSpeed =50,  .earlyExitRange =8}, false);
+    intake_piston.set_value(true);
+    chassis.moveToPoint(24, 0, 1000, {.maxSpeed=90}, false);
     pros::delay(500);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 750);
-    pros::delay(150);
-    move(-50,600);
-    turn(450,-50);
-    move(50,600);
-    move(50,550);
+    chassis.turnToHeading(180, 500);
+    intake_piston.set_value(false);
+    chassis.moveToPoint(-8, -80, 2500);
+    conveyorTask.remove();
     conveyor.move(0);
     intake.move(0);
+    chassis.moveToPoint(55, -5, 2000, {.forwards = false}, false);
 }
 
 void fractalILOVEYOU(){

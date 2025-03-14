@@ -48,7 +48,7 @@ void moveLadyBrownAsync() {
 
 void moveLadyBrownAsync2() {
     lady_brown.move(127);
-    pros::delay(2000); // Adjust timing as needed
+    pros::delay(1000); // Adjust timing as needed
     lady_brown.move(0); // Stop movement
 }
 
