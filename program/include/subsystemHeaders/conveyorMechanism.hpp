@@ -14,4 +14,4 @@ bool set_intake(bool intakePosition);
 
 void auton_conveyor(std::string color);
 
-std::string change_color(std::string teamColor);
+void change_color(std::string teamColor);

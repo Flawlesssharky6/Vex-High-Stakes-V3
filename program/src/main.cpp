@@ -82,12 +82,12 @@ void competition_initialize() {
 void autonomous() {
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  blueLeftCorner();
+  //blueLeftCorner();
   //skills();
   //redLeftCorner();
   //autonomusProgram();
   //redRightCorner();
-  //blueRightCorner();
+  blueRightCorner();
 }
 
 /**
@@ -112,6 +112,8 @@ void opcontrol() {
   bool intakePosition = true;
   auto timeFlag = pros::millis();
   std::string teamColor = "blue";
+  // Capture teamColor by reference in the lambda function
+  pros::Task changeTeamColor([&teamColor]{ change_color(teamColor); });
 
   while (true) {
     pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));
