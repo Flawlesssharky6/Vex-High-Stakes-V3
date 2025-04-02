@@ -113,7 +113,13 @@ void opcontrol() {
   auto timeFlag = pros::millis();
   std::string teamColor = "blue";
   // Capture teamColor by reference in the lambda function
-  pros::Task changeTeamColor([&teamColor]{ change_color(teamColor); });
+  // Start an asynchronous task to update teamColor
+  pros::Task changeTeamColor([&teamColor]() {
+    while (true) {
+        change_color(teamColor); // Call the change_color function
+        pros::delay(20);         // Add a small delay to prevent CPU overuse
+    }
+});
 
   while (true) {
     pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));

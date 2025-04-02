@@ -102,11 +102,11 @@ bool set_intake(bool intakePosition){
     return(intakePosition);
 }
 
-void change_color(std::string& teamColor){
-    if(partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+void change_color(std::string& teamColor) {
+    if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
         teamColor = "red";
-    } else if(partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+    } else if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
         teamColor = "blue";
     }
-    pros::delay(20);
+    pros::delay(20); // Small delay to prevent CPU overuse
 }
