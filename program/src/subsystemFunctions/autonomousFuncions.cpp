@@ -1,4 +1,5 @@
 #include "lemlib/asset.hpp"
+#include "lemlib/chassis/chassis.hpp"
 #include "liblvgl/llemu.hpp"
 #include "liblvgl/misc/lv_async.h"
 #include "main.h"
@@ -15,8 +16,43 @@
 #include <random>
 
 
+void odomTuning(){
+    chassis.moveToPoint(0, 24, 100000);
+}
 
-void autonomusProgram(){
+void worldSkills(){
+    //get alliance stake
+    chassis.setPose(12, -13, -42);
+    setLadyBrownMechanism(127);
+    pros::delay(900);
+    setLadyBrownMechanism(0);
+    //get 1st stake
+    move(-50, 500);
+    pros::Task ladyBrownTask(moveLadyBrownAsync);
+    clamp.set_value(true);
+    pros::delay(100);
+    pros::delay(100);
+    chassis.turnToHeading(90, 600);
+    conveyor.move(127);
+    intake.move(127);
+    chassis.moveToPoint(48, -30, 900, {.minSpeed=80, .earlyExitRange = 5}, false);
+    chassis.moveToPoint(72, -45, 1000, {.minSpeed=60, .earlyExitRange = 5}, false);
+    chassis.moveToPoint(96, -48, 1500);
+    pros::delay(500);
+    autoPrepareLadyBrown();
+    chassis.moveToPose(70, -66, 180, 5000, {.forwards=true}, false);
+    conveyor.move(0);
+    setLadyBrownMechanism(127);
+    pros::delay(1000);
+    conveyor.move(127);
+    chassis.moveToPoint(chassis.getPose().x, ((chassis.getPose().y)+5), 600, {.forwards = false}, false);
+    setLadyBrownMechanism(-127);
+    pros::delay(1000);
+    setLadyBrownMechanism(0);
+
+}
+
+void skills(){
     //get alliance stake
     chassis.setPose(12, -13, -40);
     setLadyBrownMechanism(127);
@@ -170,177 +206,7 @@ void autonomusProgram(){
 
 
 
-void skills(){
 
-    //put ring on alliance stake
-    conveyor.move(127);
-    intake.move(127);
-    pros::delay(600);
-    conveyor.move(0);
-    intake.move(0);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(0);
-    intake.move(0);
-    pros::delay(50);
-
-    //get first stake
-    move(50, 520);
-    pros::delay(50);
-    turn(520, -50);
-    pros::delay(50);
-    move(-40, 550);
-    left_motor_group.move(-35);
-    right_motor_group.move(-35);
-    pros::delay(360);
-    clamp.set_value(true);
-    pros::delay(190);
-    left_motor_group.move(0);
-    right_motor_group.move(0);
-    pros::delay(100);
-
-    //get rings
-    turn(570, 50);
-    pros::delay(50);
-    conveyor.move(127);
-    intake.move(127);  
-    move(50, 700);
-    pros::delay(50);
-    move(-50,100);
-    pros::delay(200);
-    turn(320, 50);
-    move(50, 900);
-    conveyor.move(-127);
-    intake.move(-127);  
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 850);
-    pros::delay(250);
-    turn(960, 50);
-    move(50, 700);
-    pros::delay(50);
-
-    //corner rings 
-    turn(145, -50);
-    pros::delay(50);
-    move(50, 600);
-    pros::delay(500);
-    move(50, 600);
-    pros::delay(1000);
-    move(50, 1000); 
-    pros::delay(1250); 
-    move(50, 1000); 
-    move(-50, 800);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    turn(500, -50);
-    move(50, 1500);
-    move(-50, 300);
-    move(50,500);
-    pros::delay(150);
-    turn(820, -50);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    move(-50, 750);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(100);
-    clamp.set_value(false);
-
-    //begin move to second corner
-    move(50, 375);
-    conveyor.move(0);
-    intake.move(0);
-    turn(570, 50);
-    move(50,2000);
-    pros::delay(500);
-    move(-70, 1300);
-    conveyor.move(127);
-    intake.move(127);
-    turn(530, 50);
-    move(50, 1200);
-    move(-50, 660);
-    pros::delay(50);
-    turn(505, -50);
-    conveyor.move(0);
-    intake.move(0);
-    move(-50, 1265);
-
-    //clamp new goal and grab corner rings
-    clamp.set_value(true);
-    move(-50,35);
-    turn(1100, 50);
-    conveyor.move(127);
-    intake.move(127);
-    move(50, 300);
-    pros::delay(500);
-    move(50, 600);
-    pros::delay(1000);
-    move(50, 900); 
-    conveyor.move(0);
-    intake.move(0);
-    pros::delay(250); 
-    move(50, 300); 
-    conveyor.move(127);
-    intake.move(127);
-    move(-50, 800);
-    pros::delay(300);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(400);
-    conveyor.move(127);
-    intake.move(127);
-    turn(500, -50);
-    move(50, 1000);
-    move(-50, 300);
-    move(50,500);
-    pros::delay(150);
-    turn(820, -50);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(200);
-    conveyor.move(127);
-    intake.move(127);
-    move(-50, 750);
-    conveyor.move(-127);
-    intake.move(-127);
-    pros::delay(100);
-
-    //put goal in corner and go towards middle
-    clamp.set_value(false);
-    conveyor.move(0);
-    intake.move(0);
-    move(50, 500);
-    turn(300,-50);
-    conveyor.move(127);
-    intake.move(127);
-    clamp.set_value(true);
-    move(-50, 1000);
-    move(80, 1550);
-
-    //plow goals into corner
-    turn(780, -50);
-    move(-80, 1000);
-    turn(100,50);
-    move(-80,3000);
-    move(50, 800);
-    turn(500, -50);
-    move(-50,700);
-    move(50,900);
-    turn(360, -50);
-    move(-100,3700);
-    move(100,800);
-
-
-}
 
 
 

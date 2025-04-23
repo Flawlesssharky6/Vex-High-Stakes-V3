@@ -1,6 +1,7 @@
 #include "main.h"
 #include "fmt/format.h"
 #include "lemlib/api.hpp"  IWYU pragma: keep
+#include "pros/rtos.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "liblvgl/llemu.hpp"
 #include "pros/motors.h"
@@ -27,8 +28,6 @@ void initialize() {
   pros::lcd::initialize(); // initialize brain screen
   pros::lcd::set_text(1, "32092D");
   lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   lady_brown_encoder.reset_position();
   chassis.calibrate(); // calibrate sensors
   //pros::delay(2000);
@@ -83,11 +82,12 @@ void autonomous() {
   left_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   right_motor_group.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   //blueLeftCorner();
-  //skills();
+  worldSkills();
+  //odomTuning();
   //redLeftCorner();
   //autonomusProgram();
   //redRightCorner();
-  blueRightCorner();
+  //blueRightCorner();
 }
 
 /**
@@ -121,6 +121,8 @@ void opcontrol() {
     }
 });
 
+  
+
   while (true) {
     pros::lcd::set_text(4, std::to_string(lady_brown_encoder.get_position()));
     set_drive();
@@ -131,6 +133,7 @@ void opcontrol() {
     //intakePosition = set_intake(intakePosition);
     if (pros::millis() - timeFlag >= 1000) {
       controller.print(1, 0, "clamp: %s", clampPosition ? "Open" : "Closed");
+      partner_controller.print(1, 0, "team color: %s", teamColor.c_str());
       timeFlag = pros::millis();
     }
     pros::Task::delay_until(&timeFlag, 10);

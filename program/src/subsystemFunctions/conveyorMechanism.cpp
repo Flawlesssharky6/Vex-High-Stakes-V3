@@ -1,42 +1,81 @@
 #include "main.h"
+#include "pros/misc.h"
 #include "pros/rtos.hpp"
 #include "subsystemHeaders/globals.hpp"
+#include <sys/_intsup.h>
 
 //helper functions
 void set_conveyor_mechanism(int power){
-    conveyor.move(power);
-    intake.move(power);
+        conveyor.move_velocity(power*4.72440944882); //(percent velocity)*(range of motor)/(voltage)
+        intake.move(power);
 }
 
+//driver functions
 void conveyor_color_sort(std::string color){
     int red_threshold = 50;
     int blue_threshold = 140;
     int proximity_threshold = 240;
     
-    int motorPower = 127 * (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)
-    - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2));
+    int motorPower = 0;
+    int conveyorPower = 0;
+    int intakePower = 0;
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) || controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+        motorPower = 127 * (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)
+        - controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2));
 
-    if(color == "blue"){
-        if(optical_sensor.get_hue() < red_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){
-            pros::delay(50);
-            set_conveyor_mechanism(0);
-            pros::delay(50);
-        }else{
-            set_conveyor_mechanism(motorPower);
-            pros::delay(10);
+        if(color == "blue"){
+            if(optical_sensor.get_hue() < red_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){
+                pros::delay(50);
+                set_conveyor_mechanism(0);
+                pros::delay(50);
+            }else{
+                set_conveyor_mechanism(motorPower);
+                pros::delay(10);
+            }
+        }else if(color == "red"){
+            if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){    
+                pros::delay(50);
+                set_conveyor_mechanism(0);
+                pros::delay(50);
+            }else{
+                set_conveyor_mechanism(motorPower);
+                pros::delay(10);
+            }
         }
-    }else if(color == "red"){
-        if(optical_sensor.get_hue() > blue_threshold && optical_sensor.get_proximity() > proximity_threshold && motorPower > 0){    
-            pros::delay(50);
-            set_conveyor_mechanism(0);
-            pros::delay(50);
-        }else{
-            set_conveyor_mechanism(motorPower);
-            pros::delay(10);
-        }
-}
+
+    }else if (partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) || partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+        intakePower = 127 * (partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)
+        - partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2));
+
+        intake.move(intakePower);
+    }else if (partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+        conveyorPower = 127 * (partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)
+        - partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2));
+        conveyor.move(conveyorPower);
+    }else{
+        motorPower = 0;
+        set_conveyor_mechanism(motorPower);
+        intakePower = 0;
+        intake.move(intakePower);
+        conveyorPower = 0;
+        conveyor.move(conveyorPower);
+    }
+    
+    
+
 }
 
+//second controller functions
+void secondary_conveyor(){
+    int motorPower = 127 * (partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)
+    - partner_controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2));
+
+    set_conveyor_mechanism(motorPower);
+
+    pros::delay(10);
+}
+
+//auton functions
 void auton_conveyor(std::string teamColor){
     std::string color = teamColor;
     int red_threshold = 50;
@@ -103,9 +142,9 @@ bool set_intake(bool intakePosition){
 }
 
 void change_color(std::string& teamColor) {
-    if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+    if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
         teamColor = "red";
-    } else if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+    } else if (partner_controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
         teamColor = "blue";
     }
     pros::delay(20); // Small delay to prevent CPU overuse

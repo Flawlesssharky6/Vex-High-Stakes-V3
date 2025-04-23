@@ -15,3 +15,7 @@ bool set_intake(bool intakePosition);
 void auton_conveyor(std::string color);
 
 void change_color(std::string& teamColor);
+
+//secondary controller
+
+void secondary_conveyor();

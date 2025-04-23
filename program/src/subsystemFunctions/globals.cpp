@@ -7,14 +7,14 @@
 
 // define motors
 pros::Motor conveyor(20, pros::v5::MotorGears::blue, pros::v5::MotorUnits::counts);
-pros::Motor intake(-21, pros::v5::MotorGears::rpm_200, pros::v5::MotorUnits::counts);
-pros::Motor lady_brown(-4, pros::v5::MotorGears::rpm_200, pros::v5::MotorUnits::counts);
+pros::Motor intake(-1, pros::v5::MotorGears::rpm_200, pros::v5::MotorUnits::counts);
+pros::Motor lady_brown(-13, pros::v5::MotorGears::rpm_200, pros::v5::MotorUnits::counts);
     
 // left motor group
-pros::MotorGroup left_motor_group({ -1, -2, -3 },
+pros::MotorGroup left_motor_group({ -3, -4, -6 },
     pros::MotorGearset::blue);
 // right motor group
-pros::MotorGroup right_motor_group({ 8, 9, 10 }, 
+pros::MotorGroup right_motor_group({ 7, 8, 12 }, 
     pros::MotorGearset::blue);
 
 //drive train settings
@@ -27,16 +27,16 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               );
 
 //sensor for lady brown mechanism
-pros::Rotation lady_brown_encoder(19);
+pros::Rotation lady_brown_encoder(21);
 
 //odometry sensors               
-pros::Imu imu(5);
-pros::Rotation horizontal_encoder(-18);
-pros::Rotation vertical_encoder(17);
+pros::Imu imu(11);
+pros::Rotation horizontal_encoder(-2);
+pros::Rotation vertical_encoder(-5);
 
 //tracking wheels
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -3.5);
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 1);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, .22);
 
 // odometry settings
 lemlib::OdomSensors odom_sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
@@ -67,15 +67,15 @@ extern lemlib::ExpoDriveCurve steer_curve(3, //set joystick dead zone to avoid d
 ); 
 
 // lateral PID controller
-    lemlib::ControllerSettings lateral_controller(6, // proportional gain (kP)
-                                                0.03, // integral gain (kI)
-                                                .8, // derivative gain (kD)
-                                                6, // anti windup
-                                                1, // small error range, in inches
-                                                100, // small error range timeout, in milliseconds
-                                                3, // large error range, in inches
-                                                500, // large error range timeout, in milliseconds
-                                                0 // maximum acceleration (slew)
+lemlib::ControllerSettings lateral_controller(6, // proportional gain (kP)
+                                              0.03, // integral gain (kI)
+                                              .8, // derivative gain (kD)
+                                              6, // anti windup
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
+                                              0 // maximum acceleration (slew)
 );
 
 // angular PID controller
@@ -99,4 +99,4 @@ lemlib::Chassis chassis(
 );
 
 //color sensor
-pros::Optical optical_sensor(15);
+pros::Optical optical_sensor(10);

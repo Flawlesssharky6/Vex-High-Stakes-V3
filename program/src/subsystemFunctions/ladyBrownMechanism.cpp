@@ -52,6 +52,16 @@ void moveLadyBrownAsync2() {
     lady_brown.move(0); // Stop movement
 }
 
+void autoPrepareLadyBrown() {
+    while(lady_brown_encoder.get_position() < 1550){
+        setLadyBrownMechanism(127);
+        while (lady_brown_encoder.get_position() < 200){
+            pros::delay(20);
+        }
+    }
+    setLadyBrownMechanism(0);
+}
+
 void secondary_lady_brown(){
     while (true){
         // Check if the main controller is not controlling the mechanism

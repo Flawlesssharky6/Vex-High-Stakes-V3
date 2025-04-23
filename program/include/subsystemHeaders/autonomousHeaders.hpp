@@ -1,8 +1,9 @@
 #pragma once
 
-void autonomusProgram();
+void odomTuning();
 
 //autonomous skills
+void worldSkills();
 void skills();
 
 //Head to Head autonomous
